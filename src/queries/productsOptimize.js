@@ -1,7 +1,7 @@
 import { decodeProductOpaqueId, decodeShopOpaqueId, decodeTagOpaqueId } from "../xforms/id.js";
 
 export default async function productsOptimize(context, {
-    first = 10, // The number of items to return
+    first, // The number of items to return
     offset = 0, // The offset to start returning items from
     shopIds: opaqueShopIds,
     productIds: opaqueProductIds,
