@@ -28,9 +28,13 @@ const inputSchema = new SimpleSchema({
  */
 export default async function createProductVariant(context, input) {
   inputSchema.validate(input);
-  const { collections } = context;
+  const { collections, accountId, user } = context;
   const { Products } = collections;
   const { productId, shopId, variant: productVariantInput } = input;
+
+
+  console.log("ACCOUNT ID", accountId);
+
 
   // See that user has permission to create variant
   await context.validatePermissions("reaction:legacy:products", "create", {
@@ -41,6 +45,7 @@ export default async function createProductVariant(context, input) {
   const parentProduct = await Products.findOne({ _id: productId, shopId });
   // console.log("parentProduct", parentProduct.uploadedBy);
   console.log("User ", context.user);
+  console.log("parentProduct.uploadedBy", parentProduct.uploadedBy);
   if (parentProduct.uploadedBy) {
     uploadedBy = parentProduct.uploadedBy;
   } else {
@@ -55,22 +60,22 @@ export default async function createProductVariant(context, input) {
   }
   console.log("productVariantInput", productVariantInput);
   console.log("variant", productVariantInput.price);
-if(productVariantInput.price === 0 || productVariantInput.price === null){
-  throw new ReactionError("invalid-param", "Price cannot be 0");
-}
-if (!productVariantInput.media) {
-  throw new ReactionError("invalid-param", "media cannot be empty");
-}
-console.log("productInput.media", productVariantInput.media[0]);
-// Check for media.urls
-if (!productVariantInput.media[0].URLs) {
-  throw new ReactionError("invalid-param", "media.urls cannot be empty");
-}
+  if (productVariantInput.price === 0 || productVariantInput.price === null) {
+    throw new ReactionError("invalid-param", "Price cannot be 0");
+  }
+  if (!productVariantInput.media) {
+    throw new ReactionError("invalid-param", "media cannot be empty");
+  }
+  console.log("productInput.media", productVariantInput.media[0]);
+  // Check for media.urls
+  if (!productVariantInput.media[0].URLs) {
+    throw new ReactionError("invalid-param", "media.urls cannot be empty");
+  }
 
-const { large, medium, small, thumbnail } = productVariantInput.media[0].URLs;
-if (!large || !medium || !small || !thumbnail) {
-  throw new ReactionError("invalid-param", "large, medium, small and thumbnail URLs cannot be empty");
-}
+  const { large, medium, small, thumbnail } = productVariantInput.media[0].URLs;
+  if (!large || !medium || !small || !thumbnail) {
+    throw new ReactionError("invalid-param", "large, medium, small and thumbnail URLs cannot be empty");
+  }
 
   let product;
   let parentVariant;

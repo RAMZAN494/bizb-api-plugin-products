@@ -214,6 +214,7 @@ type ProductVariant {
   "The width of the product, if it has physical dimensions"
   width: Float
 }
+
 type productStoreInfo {
   storeName: String
   name: String
@@ -665,6 +666,93 @@ input updateProductPickUpInput {
   productId: ID!
 }
 
+input updateUploadProductInput {
+  "Product input"
+  product: uploadProductInput!
+
+  "ID of product to update"
+  productId: ID!
+
+  "ID of shop that owns the product to update"
+  shopId: ID!
+}
+
+enum productCondition {
+  Never_Worn_With_Tags
+  Never_Worn
+  Very_Good_Condtion
+  Good_Condtion
+  Fair_Condtion
+}
+
+enum productType {
+  Article
+  Dress
+}
+
+input uploadProductInputs {
+  "Product input"
+  product: uploadProductInput
+
+  "ID of shop product will belong to"
+  shopId: ID!
+
+  "Set to false if you do not want to auto-create the first variant of the product"
+  shouldCreateFirstVariant: Boolean = true
+}
+
+input uploadProductInput {
+  _id: String
+
+  isVisible: Boolean
+
+  isDeleted: Boolean
+
+  description: String
+
+  pageTitle: String
+
+  productType: productType
+
+  slug: String
+
+  title: String
+
+  vendor: String
+
+  referenceId: String
+
+  productCondition: productCondition
+
+  originCountry: String
+
+  brandId: ID
+
+  price: Float
+
+  supportedFulfillmentTypes: [FulfillmentType]
+
+  tagIds: [ID]
+
+  metaDescription: String
+
+  shouldAppearInSitemap: Boolean
+
+  facebookMsg: String
+
+  googleplusMsg: String
+
+  metafields: [MetafieldInput]
+
+  pinterestMsg: String
+}
+
+type uploadProductPayload {
+  clientMutationId: String
+
+  product: Product!
+}
+
 extend type Mutation {
   updateProductPickedUpStatus(input: updateProductPickUpInput): Product
   "Archive products"
@@ -690,6 +778,11 @@ extend type Mutation {
     "Mutation input"
     input: CreateProductInput!
   ): CreateProductPayload!
+
+  uploadProduct(
+    "Mutation input"
+    input: uploadProductInputs!
+  ): uploadProductPayload!
 
   createAdminProduct(
     "Mutation input"
@@ -722,6 +815,11 @@ extend type Mutation {
   updateProduct(
     "Mutation input"
     input: UpdateProductInput!
+  ): UpdateProductPayload!
+
+  updateUploadProduct(
+    "Mutation input"
+    input: updateUploadProductInput!
   ): UpdateProductPayload!
 
   updateProductForAdmin(

@@ -11,7 +11,7 @@ import { decodeShopOpaqueId, decodeTagOpaqueId } from "../../xforms/id.js";
  * @param {String} [args.input.product] - product data
  * @param {Boolean} [input.shouldCreateFirstVariant] - Auto-create one variant for the product
  * @param {String} args.input.shopId - shopId of shop to create product for
- * @param {Object} context - an object containing the per-request state
+ * @param {Object} context - an object containing the per-request state   
  * @return {Promise<Object>} createProduct payload
  */
 export default async function createProduct(_, { input }, context) {

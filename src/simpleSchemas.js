@@ -323,7 +323,10 @@ export const Product = new SimpleSchema({
     label: "Brand ID",
 
   },
-
+  productCondition: {
+    type: String,
+    optional: true,
+  },
   referenceId: {
     type: String,
     optional: true,
@@ -449,6 +452,7 @@ export const Product = new SimpleSchema({
   },
   type: {
     type: String,
+    optional: true,
   },
   updatedAt: {
     type: Date,

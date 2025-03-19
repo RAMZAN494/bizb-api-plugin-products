@@ -38,7 +38,7 @@ export default async function createProduct(context, input) {
     shopId,
     shouldCreateFirstVariant = true,
   } = input;
-console.log("productInput", productInput);
+  console.log("productInput", productInput);
   // Check that user has permission to create product
   await context.validatePermissions("reaction:legacy:products", "create", {
     shopId,
@@ -47,7 +47,7 @@ console.log("productInput", productInput);
   if (!productInput.media) {
     throw new ReactionError("invalid-param", "media cannot be empty");
   }
-console.log("productInput.media", productInput.media[0]);
+  console.log("productInput.media", productInput.media[0]);
   // Check for media.urls
   if (!productInput.media[0].URLs) {
     throw new ReactionError("invalid-param", "media.urls cannot be empty");
@@ -61,9 +61,9 @@ console.log("productInput.media", productInput.media[0]);
 
   let newProductId = (productInput && productInput._id) || Random.id();
   let lastReferenceId = await generateRandomReferenceId(context);
-  
+
   console.log("lastReferenceId", lastReferenceId);
- 
+
 
   const initialProductData = await cleanProductInput(context, {
     productId: newProductId,

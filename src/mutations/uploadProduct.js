@@ -1,0 +1,115 @@
+import SimpleSchema from "simpl-schema";
+import Random from "@reactioncommerce/random";
+import ReactionError from "@reactioncommerce/reaction-error";
+import cleanProductInput from "../utils/cleanProductInput.js";
+import generateRandomReferenceId from "../utils/generateRandomReferenceId.js";
+
+const inputSchema = new SimpleSchema({
+    product: {
+        type: Object,
+        blackbox: true,
+        optional: true,
+    },
+    shopId: String,
+    shouldCreateFirstVariant: {
+        type: Boolean,
+        optional: true,
+    },
+});
+
+export default async function uploadProduct(context, input) {
+    inputSchema.validate(input);
+    console.log("Collections available:", Object.keys(context.collections));
+    const { appEvents, collections, simpleSchemas } = context;
+    const { Product } = simpleSchemas;
+    const { Products } = collections;
+    const {
+        product: productInput,
+        shopId,
+        shouldCreateFirstVariant = true,
+    } = input;
+
+    console.log("productInput", productInput);
+    // Check that user has permission to create product
+    await context.validatePermissions("reaction:legacy:products", "create", {
+        shopId,
+    });
+
+    // if (!productInput.media) {
+    //     throw new ReactionError("invalid-param", "media cannot be empty");
+    // }
+    // console.log("productInput.media", productInput.media[0]);
+    // Check for media.urls
+    // if (!productInput.media[0].URLs) {
+    //     throw new ReactionError("invalid-param", "media.urls cannot be empty");
+    // }
+
+    const { large, medium, small, thumbnail } = productInput?.media?.[0]?.URLs || {};
+
+    // if (!large || !medium || !small || !thumbnail) {
+    //     throw new ReactionError("invalid-param", "large, medium, small and thumbnail URLs cannot be empty");
+    // }
+
+    let newProductId = (productInput && productInput._id) || Random.id();
+    let lastReferenceId = await generateRandomReferenceId(context);
+
+    console.log("lastReferenceId", lastReferenceId);
+
+    const initialProductData = await cleanProductInput(context, {
+        productId: newProductId,
+        productInput,
+        shopId,
+    });
+
+    console.log("initialProductData", initialProductData);
+
+    if (initialProductData.isDeleted) {
+        throw new ReactionError(
+            "invalid-param",
+            "Creating a deleted product is not allowed"
+        );
+    }
+
+    const createdAt = new Date();
+    const newProduct = {
+        _id: newProductId,
+        ancestors: [],
+        createdAt,
+        handle: "",
+        isDeleted: false,
+        isVisible: false,
+        shopId,
+        shouldAppearInSitemap: true,
+        supportedFulfillmentTypes: ["shipping"],
+        title: "",
+        brandId: productInput.brandId,
+        productType: productInput.productType,
+        productCondition: productInput.productCondition,
+        updatedAt: createdAt,
+        workflow: {
+            status: "new",
+        },
+        referenceId: lastReferenceId,
+        ...initialProductData,
+    };
+    console.log("newProduct", newProduct);
+
+
+    // Apply custom transformations from plugins.
+    for (const customFunc of context.getFunctionsOfType(
+        "mutateNewProductBeforeCreate"
+    )) {
+
+        await customFunc(newProduct, { context });
+    }
+
+    Product.validate(newProduct);
+
+    const uploadedProduct = await Products.insertOne(newProduct);
+
+    console.log("uploadedProduct", uploadedProduct);
+
+    await appEvents.emit("afterProductCreate", { product: newProduct });
+
+    return newProduct;
+}
