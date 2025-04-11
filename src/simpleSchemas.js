@@ -458,6 +458,15 @@ export const Product = new SimpleSchema({
     type: Date,
     optional: true,
   },
+
+  arrivalDate: {
+    type: Date,
+    optional: true,
+  },
+  storyPostingDate: {
+    type: Date,
+    optional: true,
+  },
   vendor: {
     type: String,
     optional: true,

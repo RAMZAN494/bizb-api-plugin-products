@@ -114,6 +114,10 @@ type Product {
 
   "The product vendor or manufacturer, for display"
   vendor: String
+
+  arrivalDate: DateTime
+
+  storyPostingDate: DateTime
 }
 
 type soldOut {
@@ -511,6 +515,10 @@ input ProductInput {
   vendor: String
   "The product ReferenceId "
   referenceId: String
+
+  arrivalDate: DateTime
+
+  storyPostingDate: DateTime
 }
 
 input ProductInputForAdmin {
@@ -745,6 +753,10 @@ input uploadProductInput {
   metafields: [MetafieldInput]
 
   pinterestMsg: String
+
+  arrivalDate: DateTime
+
+  storyPostingDate: DateTime
 }
 
 type uploadProductPayload {
@@ -920,6 +932,22 @@ extend type Query {
     storeName: String
     startDate: DateTime
     endDate: DateTime
+    isSoldOut: Boolean
+  ): ProductConnection
+
+  inOfficeProducts(
+    first: Int
+    offset: Int
+    shopIds: [ID]!
+    after: String
+    productIds: [ID]
+    tagIds: [ID]
+    query: String
+    isArchived: Boolean
+    isVisible: Boolean
+    storeName: String
+    arrivalDate: DateTime
+    storyPostingDate: DateTime
     isSoldOut: Boolean
   ): ProductConnection
 }
