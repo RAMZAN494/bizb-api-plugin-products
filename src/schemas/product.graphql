@@ -118,6 +118,10 @@ type Product {
   arrivalDate: DateTime
 
   storyPostingDate: DateTime
+
+  productCondition: productCondition
+
+  ProductType: productType
 }
 
 type soldOut {
@@ -737,6 +741,8 @@ input uploadProductInput {
   brandId: ID
 
   price: Float
+
+  comparePriceAt: Float
 
   supportedFulfillmentTypes: [FulfillmentType]
 
